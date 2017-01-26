@@ -1,12 +1,16 @@
-def word_count(text):
-	import re
-	from collections import Counter
-	# text = text.replace("_"," ")
-	# text = text.replace("!!&@$%^&","")
-	# text = text.replace(":", "")
-	text = text.replace('🖖'.decode('utf-8'), " ")
+from collections import Counter
 
-	text = text.replace("_", " ")
-	text = re.sub(ur'\W', " ", text, flags=re.UNICODE)
-	text = str.lower(text).split()
-	return Counter(text)
+
+# to be backwards compatible with the old Python 2.X
+def decode_if_needed(string):
+    try:
+        return string.decode('utf-8')
+    except AttributeError:
+        return string
+
+
+def word_count(text):
+    def replace_nonalpha(char):
+        return char.lower() if char.isalnum() else ' '
+    text = ''.join(replace_nonalpha(c) for c in decode_if_needed(text))
+    return Counter(text.split())
